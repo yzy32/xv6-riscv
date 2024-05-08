@@ -24,6 +24,7 @@
 
 #define BACKSPACE 0x100
 #define C(x)  ((x)-'@')  // Control-x
+#define HISTORY_SIZE 5
 
 //
 // send one character to the uart.
@@ -76,13 +77,18 @@ consolewrite(int user_src, uint64 src, int n)
 // user_dist indicates whether dst is a user
 // or kernel address.
 //
+
+char history_buf[HISTORY_SIZE][INPUT_BUF_SIZE];
+int history_index = 0;
+int history_count = 0;
+int word_index = 0;
+
 int
 consoleread(int user_dst, uint64 dst, int n)
 {
   uint target;
   int c;
   char cbuf;
-
   target = n;
   acquire(&cons.lock);
   while(n > 0){
@@ -115,7 +121,17 @@ consoleread(int user_dst, uint64 dst, int n)
     dst++;
     --n;
 
+    history_buf[history_index][word_index] = cbuf;
+    word_index++;
+
     if(c == '\n'){
+      word_index = 0;
+
+      // Update history index and count
+      history_index = (history_index + 1) % HISTORY_SIZE;
+      if (history_count < HISTORY_SIZE)
+          history_count++;
+      
       // a whole line has arrived, return to
       // the user-level read().
       break;
@@ -132,6 +148,7 @@ consoleread(int user_dst, uint64 dst, int n)
 // do erase/kill processing, append to cons.buf,
 // wake up consoleread() if a whole line has arrived.
 //
+
 void
 consoleintr(int c)
 {
@@ -155,6 +172,25 @@ consoleintr(int c)
       consputc(BACKSPACE);
     }
     break;
+
+  case C('W'): // Navigate Up
+    if (history_count > 0) {
+        history_index = (history_index + HISTORY_SIZE - 1) % HISTORY_SIZE;
+        // Print the command from history
+        for (int i = 0; i < INPUT_BUF_SIZE && history_buf[history_index][i] != '\n'; i++)
+            consputc(history_buf[history_index][i]);
+    }
+    break;
+
+  case C('S'): // Navigate Down
+    if (history_count > 0) {
+        history_index = (history_index + 1) % HISTORY_SIZE;
+        // Print the command from history
+        for (int i = 0; i < INPUT_BUF_SIZE && history_buf[history_index][i] != '\n'; i++)
+            consputc(history_buf[history_index][i]);
+    }
+    break;
+
   default:
     if(c != 0 && cons.e-cons.r < INPUT_BUF_SIZE){
       c = (c == '\r') ? '\n' : c;
