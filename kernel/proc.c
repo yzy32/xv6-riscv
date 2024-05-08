@@ -353,7 +353,8 @@ exit(int status)
 
   int isBackground = (p->parent->pid != 2);
   if (isBackground) {
-    printf("%d Done %s\n", p->pid, p->name);
+    int duration = ticks - p->start_ticks;
+    printf("%d Done %s %d\n", p->pid, p->name, duration);
   }
 
   // Close all open files.

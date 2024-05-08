@@ -31,6 +31,8 @@ exec(char *path, char **argv)
   pagetable_t pagetable = 0, oldpagetable;
   struct proc *p = myproc();
 
+  p->start_ticks = ticks;
+
   begin_op();
 
   if((ip = namei(path)) == 0){
