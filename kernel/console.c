@@ -126,7 +126,7 @@ consoleread(int user_dst, uint64 dst, int n)
 
     if(c == '\n'){
       word_index = 0;
-
+      printf("this is enter");
       // Update history index and count
       history_index = (history_index + 1) % HISTORY_SIZE;
       if (history_count < HISTORY_SIZE)
@@ -153,7 +153,9 @@ void
 consoleintr(int c)
 {
   acquire(&cons.lock);
-
+  printf("r= %d\n", cons.r);
+  printf("w= %d\n", cons.w);
+  printf("e= %d\n", cons.e);
   switch(c){
   case C('P'):  // Print process list.
     procdump();
