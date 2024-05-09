@@ -153,9 +153,11 @@ void
 consoleintr(int c)
 {
   acquire(&cons.lock);
+  printf("\n===========\n");
   printf("r= %d\n", cons.r);
   printf("w= %d\n", cons.w);
   printf("e= %d\n", cons.e);
+  printf("\n===========\n");
   switch(c){
   case C('P'):  // Print process list.
     procdump();
