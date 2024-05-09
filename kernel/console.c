@@ -60,11 +60,11 @@ int
 consolewrite(int user_src, uint64 src, int n)
 {
   int i;
-  printf("\n=====write======\n");
-  printf("r= %d\n", cons.r);
-  printf("w= %d\n", cons.w);
-  printf("e= %d\n", cons.e);
-  printf("=====write======\n");
+  // printf("\n=====write======\n");
+  // printf("r= %d\n", cons.r);
+  // printf("w= %d\n", cons.w);
+  // printf("e= %d\n", cons.e);
+  // printf("=====write======\n");
 
   for(i = 0; i < n; i++){
     char c;
