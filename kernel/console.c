@@ -60,6 +60,11 @@ int
 consolewrite(int user_src, uint64 src, int n)
 {
   int i;
+  printf("\n=====write======\n");
+  printf("r= %d\n", cons.r);
+  printf("w= %d\n", cons.w);
+  printf("e= %d\n", cons.e);
+  printf("=====write======\n");
 
   for(i = 0; i < n; i++){
     char c;
@@ -91,6 +96,11 @@ consoleread(int user_dst, uint64 dst, int n)
   char cbuf;
   target = n;
   acquire(&cons.lock);
+  printf("\n=====read======\n");
+  printf("r= %d\n", cons.r);
+  printf("w= %d\n", cons.w);
+  printf("e= %d\n", cons.e);
+  
   while(n > 0){
     // wait until interrupt handler has put some
     // input into cons.buffer.
@@ -126,7 +136,7 @@ consoleread(int user_dst, uint64 dst, int n)
 
     if(c == '\n'){
       word_index = 0;
-      printf("this is enter");
+      printf("this is enter\n");
       // Update history index and count
       history_index = (history_index + 1) % HISTORY_SIZE;
       if (history_count < HISTORY_SIZE)
@@ -137,6 +147,7 @@ consoleread(int user_dst, uint64 dst, int n)
       break;
     }
   }
+  printf("=====read======\n");
   release(&cons.lock);
 
   return target - n;
@@ -153,11 +164,11 @@ void
 consoleintr(int c)
 {
   acquire(&cons.lock);
-  printf("\n===========\n");
+  printf("\n=====interrupt======\n");
   printf("r= %d\n", cons.r);
   printf("w= %d\n", cons.w);
   printf("e= %d\n", cons.e);
-  printf("\n===========\n");
+  printf("=====interrupt======\n");
   switch(c){
   case C('P'):  // Print process list.
     procdump();
